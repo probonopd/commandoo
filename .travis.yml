@@ -1,0 +1,32 @@
+language: generic
+sudo: required
+dist: trusty
+
+env:
+  global:
+    - WINEPREFIX=~/.winelaz
+    - DISPLAY=:99.0
+
+matrix:
+  include:
+    - os: linux
+      env: LAZ_VER=1.6.4 LAZ_OPT="--os=linux --cpu=x86_64"
+
+before_install:
+  - sudo add-apt-repository ppa:beineri/opt-qt-5.10.1-trusty -y
+  - sudo apt-get update -qq
+  # Start virtual display server
+  - wget https://raw.githubusercontent.com/nielsAD/travis-lazarus/master/.travis.install.py
+  - chmod +x .travis.install.py
+  - Xvfb $DISPLAY &
+
+install:
+  - sudo apt-get -y install qt510base libgl1-mesa-dev
+  - source /opt/qt*/bin/qt*-env.sh
+  - ./.travis.install.py
+
+script:
+  - cd code
+  - lazbuild -r commandoo.lpi
+  
+# Partly based on https://github.com/ten0r/kam_remake
